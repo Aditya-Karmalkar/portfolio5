@@ -11,13 +11,6 @@
 
 ---
 
-# Demo :movie_camera:
-
-![](./public/image/screen.png)
-
-## View live preview [here](https://abusaid.netlify.app/).
-
----
 
 ## Table of Contents :scroll:
 
