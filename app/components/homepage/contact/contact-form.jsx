@@ -38,7 +38,7 @@ function ContactForm() {
       setIsLoading(true);
       setIsSent(false); // Reset sent status when resending
       const res = await axios.post(
-        `${process.env.GMAIL_PASSKEY}/api/contact`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
         userInput
       );
 
