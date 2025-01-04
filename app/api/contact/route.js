@@ -34,7 +34,7 @@ async function sendEmail(payload) {
   const { name, email, message: userMessage } = payload;
 
   const mailOptions = {
-    from: `"Portfolio Contact" <${process.env.EMAIL_ADDRESS}>`, // Sender address
+    from: `"Portfolio Contact" <${process.env.NEXT_PUBLIC_APP_URL}>`, // Sender address
     to: process.env.EMAIL_ADDRESS, // Your email to receive the message
     subject: `New Message From ${name}`, // Subject line
     text: `Name: ${name}\nEmail: ${email}\nMessage: ${userMessage}`, // Plain text body
