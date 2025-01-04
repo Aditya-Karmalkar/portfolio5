@@ -1,16 +1,15 @@
-import axios from 'axios';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-// Create and configure Nodemailer transporter
+// Nodemailer transporter configuration
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  port: 587, // Use 465 for secure (SSL), 587 for non-secure (TLS)
+  secure: false, // Use `true` for 465, `false` for other ports
   auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.GMAIL_PASSKEY,
+    user: process.env.EMAIL_ADDRESS, // Your Gmail address
+    pass: process.env.GMAIL_PASSKEY, // App-specific password
   },
 });
 
@@ -30,15 +29,17 @@ const generateEmailTemplate = (name, email, userMessage) => `
   </div>
 `;
 
-// Helper function to send an email via Nodemailer
-async function sendEmail(name, email, userMessage) {
+// Send email helper function
+async function sendEmail(payload) {
+  const { name, email, message: userMessage } = payload;
+
   const mailOptions = {
-    from: process.env.EMAIL_ADDRESS,
-    to: process.env.EMAIL_ADDRESS,
-    subject: `New Message From ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\nMessage: ${userMessage}`,
-    html: generateEmailTemplate(name, email, userMessage),
-    replyTo: email,
+    from: `"Portfolio Contact" <${process.env.EMAIL_ADDRESS}>`, // Sender address
+    to: process.env.EMAIL_ADDRESS, // Your email to receive the message
+    subject: `New Message From ${name}`, // Subject line
+    text: `Name: ${name}\nEmail: ${email}\nMessage: ${userMessage}`, // Plain text body
+    html: generateEmailTemplate(name, email, userMessage), // HTML body
+    replyTo: email, // Allows replying directly to the sender's email
   };
 
   try {
@@ -50,7 +51,7 @@ async function sendEmail(name, email, userMessage) {
   }
 }
 
-// API Handler
+// POST request handler
 export async function POST(request) {
   try {
     const payload = await request.json();
@@ -58,38 +59,31 @@ export async function POST(request) {
 
     // Validate input
     if (!name || !email || !userMessage) {
-      return NextResponse.json({
-        success: false,
-        message: 'All fields are required.',
-      }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: 'Name, email, and message are required.' },
+        { status: 400 }
+      );
     }
 
-    // Validate environment variables
-    if (!process.env.EMAIL_ADDRESS || !process.env.GMAIL_PASSKEY) {
-      return NextResponse.json({
-        success: false,
-        message: 'Email configuration is missing.',
-      }, { status: 500 });
-    }
-
-    const emailSuccess = await sendEmail(name, email, userMessage);
+    // Send email
+    const emailSuccess = await sendEmail(payload);
 
     if (emailSuccess) {
-      return NextResponse.json({
-        success: true,
-        message: 'Email sent successfully!',
-      }, { status: 200 });
-    } else {
-      return NextResponse.json({
-        success: false,
-        message: 'Failed to send email.',
-      }, { status: 500 });
+      return NextResponse.json(
+        { success: true, message: 'Email sent successfully!' },
+        { status: 200 }
+      );
     }
+
+    return NextResponse.json(
+      { success: false, message: 'Failed to send email.' },
+      { status: 500 }
+    );
   } catch (error) {
     console.error('API Error:', error.message);
-    return NextResponse.json({
-      success: false,
-      message: 'Server error occurred.',
-    }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: 'Server error occurred.' },
+      { status: 500 }
+    );
   }
 }
