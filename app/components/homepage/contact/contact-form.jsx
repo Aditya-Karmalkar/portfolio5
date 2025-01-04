@@ -33,25 +33,25 @@ function ContactForm() {
       setError({ ...error, required: false });
     };
 
-    try {
-  setIsLoading(true);
-  await axios.post(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
-    userInput
-  );
+     try {
+      setIsLoading(true);
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
+        userInput
+      );
 
-  toast.success("Message sent successfully!");
-  setUserInput({
-    name: "",
-    email: "",
-    message: "",
-  });
-} catch (error) {
-  toast.error(error?.response?.data?.message || "An error occurred!");
-} finally {
-  setIsLoading(false);
-}
-
+      toast.success("Message sent successfully!");
+      setUserInput({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    };
+  };
   return (
     <div>
       <p className="font-medium mb-5 text-[#16f2b3] text-xl uppercase">Contact with me</p>
@@ -126,5 +126,5 @@ function ContactForm() {
     </div>
   );
 };
-};
+
 export default ContactForm;
