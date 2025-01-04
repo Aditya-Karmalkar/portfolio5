@@ -7,10 +7,10 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
   port: 587,
-  secure: false, 
+  secure: false,
   auth: {
     user: process.env.EMAIL_ADDRESS,
-    pass: process.env.GMAIL_PASSKEY, 
+    pass: process.env.GMAIL_PASSKEY,
   },
 });
 
@@ -22,12 +22,17 @@ async function sendTelegramMessage(token, chat_id, message) {
       text: message,
       chat_id,
     });
-    return res.data.ok;
+    if (res.data.ok) {
+      return true;
+    } else {
+      console.error('Telegram message failed:', res.data.description);
+      return false;
+    }
   } catch (error) {
     console.error('Error sending Telegram message:', error.response?.data || error.message);
     return false;
   }
-};
+}
 
 // HTML email template
 const generateEmailTemplate = (name, email, userMessage) => `
@@ -48,24 +53,25 @@ const generateEmailTemplate = (name, email, userMessage) => `
 // Helper function to send an email via Nodemailer
 async function sendEmail(payload, message) {
   const { name, email, message: userMessage } = payload;
-  
+
   const mailOptions = {
-    from: "Portfolio", 
+    from: 'Portfolio', 
     to: process.env.EMAIL_ADDRESS, 
     subject: `New Message From ${name}`, 
     text: message, 
     html: generateEmailTemplate(name, email, userMessage), 
     replyTo: email, 
   };
-  
+
   try {
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.response);
     return true;
   } catch (error) {
-    console.error('Error while sending email:', error.message);
+    console.error('Error while sending email:', error.response || error.message);
     return false;
   }
-};
+}
 
 export async function POST(request) {
   try {
@@ -108,4 +114,4 @@ export async function POST(request) {
       message: 'Server error occurred.',
     }, { status: 500 });
   }
-};
+}
