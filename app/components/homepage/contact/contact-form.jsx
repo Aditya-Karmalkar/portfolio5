@@ -34,24 +34,24 @@ function ContactForm() {
     };
 
     try {
-  setIsLoading(true);
-  await axios.post(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
-    userInput
-  );
+      setIsLoading(true);
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
+        userInput
+      );
 
-  toast.success("Message sent successfully!");
-  setUserInput({
-    name: "",
-    email: "",
-    message: "",
-  });
-} catch (error) {
-  toast.error(error?.response?.data?.message || "An error occurred!");
-} finally {
-  setIsLoading(false);
-}
-
+      toast.success("Message sent successfully!");
+      setUserInput({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    };
+  };
 
   return (
     <div>
