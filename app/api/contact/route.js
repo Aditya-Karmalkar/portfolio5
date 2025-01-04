@@ -14,26 +14,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Helper function to send a message via Telegram
-async function sendTelegramMessage(token, chat_id, message) {
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  try {
-    const res = await axios.post(url, {
-      text: message,
-      chat_id,
-    });
-    if (res.data.ok) {
-      return true;
-    } else {
-      console.error('Telegram message failed:', res.data.description);
-      return false;
-    }
-  } catch (error) {
-    console.error('Error sending Telegram message:', error.response?.data || error.message);
-    return false;
-  }
-}
-
 // HTML email template
 const generateEmailTemplate = (name, email, userMessage) => `
   <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; background-color: #f4f4f4;">
@@ -51,76 +31,60 @@ const generateEmailTemplate = (name, email, userMessage) => `
 `;
 
 // Helper function to send an email via Nodemailer
-async function sendEmail(payload, message) {
-  const { name, email, message: userMessage } = payload;
-
+async function sendEmail(name, email, userMessage) {
   const mailOptions = {
-    from: 'Portfolio', 
-    to: process.env.EMAIL_ADDRESS, 
-    subject: `New Message From ${name}`, 
-    text: message, 
-    html: generateEmailTemplate(name, email, userMessage), 
-    replyTo: email, 
+    from: process.env.EMAIL_ADDRESS,
+    to: process.env.EMAIL_ADDRESS,
+    subject: `New Message From ${name}`,
+    text: `Name: ${name}\nEmail: ${email}\nMessage: ${userMessage}`,
+    html: generateEmailTemplate(name, email, userMessage),
+    replyTo: email,
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.response);
+    await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error('Error while sending email:', error.response || error.message);
+    console.error('Error while sending email:', error.message);
     return false;
   }
 }
 
+// API Handler
 export async function POST(request) {
   try {
     const payload = await request.json();
     const { name, email, message: userMessage } = payload;
-    const emailid = process.env.EMAIL_ADDRESS;
-    const passkey = process.env.GMAIL_PASSKEY;
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chat_id = process.env.TELEGRAM_CHAT_ID;
 
-    // Validate environment variables
-    // if (!token || !chat_id) {
-    //   return NextResponse.json({
-    //     success: false,
-    //     message: 'Telegram token or chat ID is missing.',
-    //   }, { status: 400 });
-    // }
-    if (!emailid|| !passkey) {
+    // Validate input
+    if (!name || !email || !userMessage) {
       return NextResponse.json({
         success: false,
-        message: 'email id or pass key is missing.',
+        message: 'All fields are required.',
       }, { status: 400 });
     }
 
-    const message = `New message from ${name}\n\nEmail: ${email}\n\nMessage:\n\n${userMessage}\n\n`;
+    // Validate environment variables
+    if (!process.env.EMAIL_ADDRESS || !process.env.GMAIL_PASSKEY) {
+      return NextResponse.json({
+        success: false,
+        message: 'Email configuration is missing.',
+      }, { status: 500 });
+    }
 
-    // Send Telegram message
-    const telegramSuccess = await sendTelegramMessage(token, chat_id, message);
+    const emailSuccess = await sendEmail(name, email, userMessage);
 
-    // Send email
-    const emailSuccess = await sendEmail(payload, message);
-
-    // if (telegramSuccess && emailSuccess) {
-    //   return NextResponse.json({
-    //     success: true,
-    //     message: 'Message and email sent successfully!',
-    //   }, { status: 200 });
-    // }
-     if (emailSuccess) {
+    if (emailSuccess) {
       return NextResponse.json({
         success: true,
         message: 'Email sent successfully!',
       }, { status: 200 });
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: 'Failed to send email.',
+      }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: false,
-      message: 'Failed to send message or email.',
-    }, { status: 500 });
   } catch (error) {
     console.error('API Error:', error.message);
     return NextResponse.json({
