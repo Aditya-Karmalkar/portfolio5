@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
-  port: 587, // Use 465 for secure (SSL), 587 for non-secure (TLS)
+  port: 465, // Use 465 for secure (SSL), 587 for non-secure (TLS)
   secure: false, // Use `true` for 465, `false` for other ports
   auth: {
     user: process.env.EMAIL_ADDRESS, // Your Gmail address
