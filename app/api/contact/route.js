@@ -77,14 +77,22 @@ export async function POST(request) {
   try {
     const payload = await request.json();
     const { name, email, message: userMessage } = payload;
+    const emailid = process.env.EMAIL_ADDRESS;
+    const passkey = process.env.GMAIL_PASSKEY;
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chat_id = process.env.TELEGRAM_CHAT_ID;
 
     // Validate environment variables
-    if (!token || !chat_id) {
+    // if (!token || !chat_id) {
+    //   return NextResponse.json({
+    //     success: false,
+    //     message: 'Telegram token or chat ID is missing.',
+    //   }, { status: 400 });
+    // }
+    if (!emailid|| !passkey) {
       return NextResponse.json({
         success: false,
-        message: 'Telegram token or chat ID is missing.',
+        message: 'email id or pass key is missing.',
       }, { status: 400 });
     }
 
