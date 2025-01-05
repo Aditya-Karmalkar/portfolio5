@@ -1,4 +1,3 @@
-// @flow strict
 import { personalData } from '@/utils/data/personal-data';
 import Link from 'next/link';
 import { BiLogoLinkedin } from "react-icons/bi";
@@ -8,6 +7,13 @@ import { FaXTwitter } from "react-icons/fa6";
 import { IoLogoGithub, IoMdCall } from "react-icons/io";
 import { MdAlternateEmail } from "react-icons/md";
 import ContactForm from './contact-form';
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(
+    () => alert("Phone number copied to clipboard!"),
+    () => alert("Failed to copy phone number.")
+  );
+}
 
 function ContactSection() {
   return (
@@ -27,14 +33,20 @@ function ContactSection() {
                 className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
                 size={36}
               />
-              <span>{personalData.email}</span>
+              <a href={`mailto:${personalData.email}`} className="hover:underline">
+                {personalData.email}
+              </a>
             </p>
             <p className="text-sm md:text-xl flex items-center gap-3">
               <IoMdCall
                 className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
                 size={36}
+                onClick={() => copyToClipboard(personalData.phone)}
               />
-              <span>
+              <span
+                className="cursor-pointer hover:underline"
+                onClick={() => copyToClipboard(personalData.phone)}
+              >
                 {personalData.phone}
               </span>
             </p>
@@ -43,9 +55,7 @@ function ContactSection() {
                 className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
                 size={36}
               />
-              <span>
-                {personalData.address}
-              </span>
+              <span>{personalData.address}</span>
             </p>
           </div>
           <div className="mt-8 lg:mt-16 flex items-center gap-5 lg:gap-10">
@@ -84,6 +94,6 @@ function ContactSection() {
       </div>
     </div>
   );
-};
+}
 
 export default ContactSection;
