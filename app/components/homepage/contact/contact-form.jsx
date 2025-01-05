@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 function ContactForm() {
   const [error, setError] = useState({ email: false, required: false });
   const [isLoading, setIsLoading] = useState(false);
-  const [isSent, setIsSent] = useState(false); // Track message sent status
+  const [isSent, setIsSent] = useState(false); // Track if the message was sent
   const [userInput, setUserInput] = useState({
     name: "",
     email: "",
@@ -36,21 +36,26 @@ function ContactForm() {
 
     try {
       setIsLoading(true);
-      setIsSent(false); // Reset sent status when resending
+      setIsSent(false); // Reset the sent status before sending
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_APP_URL}/api/contact`,
         userInput
       );
 
       toast.success("Message sent successfully!");
-      setIsSent(true); // Set sent status on success
       setUserInput({
         name: "",
         email: "",
         message: "",
       });
+      setIsSent(true); // Set the sent status to true
+
+      // Automatically hide the success message after 10 seconds
+      setTimeout(() => {
+        setIsSent(false);
+      }, 10000);
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || "Failed to send the message.");
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +68,9 @@ function ContactForm() {
       </p>
       <div className="max-w-3xl text-white rounded-lg border border-[#464c6a] p-3 lg:p-5">
         <p className="text-sm text-[#d3d8e8]">
-          {"If you have any questions or concerns, please don't hesitate to contact me. I am open to any work opportunities that align with my skills and interests."}
+          {
+            "If you have any questions or concerns, please don't hesitate to contact me. I am open to any work opportunities that align with my skills and interests."
+          }
         </p>
         <div className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -87,9 +94,7 @@ function ContactForm() {
               maxLength="100"
               required={true}
               value={userInput.email}
-              onChange={(e) =>
-                setUserInput({ ...userInput, email: e.target.value })
-              }
+              onChange={(e) => setUserInput({ ...userInput, email: e.target.value })}
               onBlur={() => {
                 checkRequired();
                 setError({ ...error, email: !isValidEmail(userInput.email) });
@@ -115,7 +120,6 @@ function ContactForm() {
               value={userInput.message}
             />
           </div>
-
           <div className="flex flex-col items-center gap-3">
             {error.required && (
               <p className="text-sm text-red-400">All fields are required!</p>
@@ -135,10 +139,8 @@ function ContactForm() {
                 </span>
               )}
             </button>
-
-            {/* Display confirmation message */}
             {isSent && (
-              <p className="mt-3 text-sm text-green-400">
+              <p className="text-sm text-green-400">
                 Message sent successfully!
               </p>
             )}
