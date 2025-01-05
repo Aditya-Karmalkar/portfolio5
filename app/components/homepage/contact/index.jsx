@@ -27,19 +27,14 @@ function ContactSection() {
                 className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
                 size={36}
               />
-               <a href={`mailto:${personalData.email}`} className="hover:underline">
-                {personalData.email}
-              </a>
+              <span>{personalData.email}</span>
             </p>
             <p className="text-sm md:text-xl flex items-center gap-3">
               <IoMdCall
                 className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
                 size={36}
               />
-              <span
-                className="cursor-pointer hover:underline"
-                onClick={() => copyToClipboard(personalData.phone)}
-              >
+              <span>
                 {personalData.phone}
               </span>
             </p>
