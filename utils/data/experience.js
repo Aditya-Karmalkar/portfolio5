@@ -9,7 +9,7 @@ export const experiences = [
     id: 2,
     title: "",
     company: "BLU DOLLPPHN",
-    duration: "(2023 - 2022)"
+    duration: "(2023 - Present)"
   },
   {
     id: 3,
