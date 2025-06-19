@@ -13,5 +13,5 @@ export const personalData = {
   stackOverflow: 'https://stackoverflow.com/', // Replace {your-id} with your actual Stack Overflow ID
   leetcode: "https://leetcode.com/", // Replace {your-username} with your actual LeetCode username
   devUsername: "Aditya Karmalkar", // Update if your Dev.to username differs
-  resume: "https://drive.google.com/file/d/16vOVUFisGBmItVsR2aZkO372EtLmZBUf/view?usp=sharing" // Replace {your-resume-id} with your resume link
+  resume: "https://drive.google.com/file/d/1s_iWTxuxzCIrP66puem95N6J0UswSjg9/view?usp=sharing" // Replace {your-resume-id} with your resume link
 }
